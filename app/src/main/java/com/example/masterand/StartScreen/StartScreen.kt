@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
-import android.util.Base64
 import android.util.Patterns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,18 +26,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.masterand.AppViewModelProvider
 import com.example.masterand.Navigation.Screen
-import com.example.masterand.R
-import java.net.URL
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
+import com.example.masterand.ViewModels.ProfileViewModel
+import kotlinx.coroutines.launch
 
 private fun createPickImageIntent(): Intent {
     return Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
@@ -47,27 +46,29 @@ private fun createPickImageIntent(): Intent {
 }
 
 @Composable
-fun ProfileScreen(navController: NavController) {
-    val nameState = rememberSaveable { mutableStateOf("") }
-    val emailState = rememberSaveable { mutableStateOf("") }
-    val colorsState = rememberSaveable { mutableStateOf("") }
-    val profileImageUri =
-        rememberSaveable { mutableStateOf<Uri?>(Uri.parse("android.resource://com.example.masterand/${R.drawable.baseline_question_mark_24}")) }
-
+fun StartScreen(
+    navController: NavController,
+    viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val coroutineScope = rememberCoroutineScope()
     val nameFocusState = remember { mutableStateOf(false) }
     val emailFocusState = remember { mutableStateOf(false) }
     val colorsFocusState = remember { mutableStateOf(false) }
 
-    val isNameValid = nameState.value.isNotEmpty()
-    val isEmailValid = Patterns.EMAIL_ADDRESS.matcher(emailState.value).matches()
-    val isColorsValid = colorsState.value.toIntOrNull() in 5..10
+    val onValueChange = viewModel::updateUiState
+    val profileDetails = viewModel.profileUiState.profileDetails
+
+    val isNameValid = profileDetails.name.isNotEmpty()
+    val isEmailValid = Patterns.EMAIL_ADDRESS.matcher(profileDetails.email).matches()
+    val isColorsValid = profileDetails.numberOfColors.toIntOrNull() in 5..10
+    val dataValid:Boolean = isNameValid && isEmailValid && isColorsValid
 
     val selectImageLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data
                 val selectedImageUri: Uri? = data?.data
-                profileImageUri.value = selectedImageUri
+                onValueChange(profileDetails.copy(profileImageUri = selectedImageUri))
             }
         }
 
@@ -91,7 +92,7 @@ fun ProfileScreen(navController: NavController) {
                 .clip(CircleShape)
                 .clickable { selectImageLauncher.launch(createPickImageIntent()) }
         ) {
-            ProfileImageWithPicker(profileImageUri = profileImageUri.value, selectImageOnClick = {
+            ProfileImageWithPicker(profileImageUri = profileDetails.profileImageUri, selectImageOnClick = {
                 selectImageLauncher.launch(createPickImageIntent())
             })
         }
@@ -99,38 +100,43 @@ fun ProfileScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextFieldWithError(
-            nameState,
+            profileDetails.name,
             nameFocusState,
             isNameValid,
             "Enter name",
             "Name can't be empty",
-            KeyboardType.Text
+            KeyboardType.Text,
+            onValueChange = { onValueChange(profileDetails.copy(name = it)) }
         )
         OutlinedTextFieldWithError(
-            emailState,
+            profileDetails.email,
             emailFocusState,
             isEmailValid,
             "Enter e-mail",
             "It must be e-mail",
-            KeyboardType.Email
+            KeyboardType.Email,
+            onValueChange = { onValueChange(profileDetails.copy(email = it)) }
+
         )
         OutlinedTextFieldWithError(
-            colorsState,
+            profileDetails.numberOfColors,
             colorsFocusState,
             isColorsValid,
             "Enter number of colors",
             "The number must be between 5 and 10",
-            KeyboardType.Number
-        )
+            KeyboardType.Number,
+            onValueChange = { onValueChange(profileDetails.copy(numberOfColors = it)) }
+            )
 
         Button(
             onClick = {
-                val profileImageUriString = profileImageUri.value?.toString()?.let { uri ->
-                    Base64.encodeToString(uri.toByteArray(), Base64.DEFAULT)
+                coroutineScope.launch {
+                    val id = viewModel.saveProfile()
+                    navController.navigate("${Screen.Profile.route}/${id}")
                 }
-                navController.navigate("${Screen.Profile.route}/${nameState.value}/${colorsState.value}/${profileImageUriString}")
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = dataValid
         ) {
             Text("Next")
         }

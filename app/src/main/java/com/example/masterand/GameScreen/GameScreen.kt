@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -24,8 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.masterand.AppViewModelProvider
 import com.example.masterand.Navigation.Screen
+import com.example.masterand.ViewModels.ProfileViewModel
 
 data class GameRowData(
     val chosenColors: MutableList<Color> = mutableStateListOf(
@@ -43,9 +45,18 @@ data class GameRowData(
 )
 
 @Composable
-fun GameScreen(navController: NavController, numberOfColors: Int) {
+fun GameScreen(
+    navController: NavController,
+    profileId: String,
+    viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
     var attempts = remember { mutableStateOf(0) }
-    var gameOver = remember { mutableStateOf(false) }
+    var gameOver = remember {
+        mutableStateOf(false)
+    }
+    viewModel.getProfileById(profileId.toLong())
+    val profileDetails = viewModel.profileUiState.profileDetails
+    val numberOfColors = profileDetails.numberOfColors.toInt()
     val colors =
         listOf(
             Color.Red,
@@ -80,19 +91,11 @@ fun GameScreen(navController: NavController, numberOfColors: Int) {
         ) {
             Button(
                 onClick = {
-                    navController.navigate(route = Screen.Profile.route)
+                    navController.navigate("${Screen.Profile.route}/${profileDetails.id}")
                 },
                 shape = CircleShape,
             ) {
                 Icon(Icons.Filled.ArrowBack, "Back")
-            }
-            Button(
-                onClick = {
-                    navController.navigate(route = Screen.Start.route)
-                },
-                shape = CircleShape
-            ) {
-                Text(text = "Start Screen")
             }
         }
 
@@ -137,21 +140,23 @@ fun GameScreen(navController: NavController, numberOfColors: Int) {
         if (gameOver.value) {
             Button(
                 onClick = {
-                    attempts.value = 0
-                    gameRows.clear()
-                    gameRows.add(GameRowData())
-                    correctColors.value = selectRandomColors(availableColors.value)
-                    gameOver.value = false
+                    navController.navigate("${Screen.Score.route}/${profileDetails.id}/${attempts.value}")
                 },
-                modifier = Modifier
-                    .height(50.dp)
-                    .width(150.dp)
+                shape = CircleShape
             ) {
                 Text(
-                    text = "Start over",
-                    fontSize = 20.sp
+                    text = "High score table",
                 )
             }
+        }
+
+        Button(
+            onClick = {
+                navController.navigate(route = Screen.Start.route)
+            },
+            shape = CircleShape
+        ) {
+            Text(text = "Logout")
         }
     }
 }

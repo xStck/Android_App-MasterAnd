@@ -16,17 +16,18 @@ import androidx.compose.ui.text.input.KeyboardType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-public fun OutlinedTextFieldWithError(
-    state: MutableState<String>,
+fun OutlinedTextFieldWithError(
+    value: String,
     focusState: MutableState<Boolean>,
     isValid: Boolean,
     labelText: String,
     errorText: String,
-    keyboardType: KeyboardType
+    keyboardType: KeyboardType,
+    onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
-        value = state.value,
-        onValueChange = { state.value = it },
+        value = value,
+        onValueChange = onValueChange,
         modifier = Modifier
             .fillMaxWidth()
             .onFocusChanged {

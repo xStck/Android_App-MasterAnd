@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.masterand.GameScreen.GameScreen
 import com.example.masterand.Navigation.SetupNavGraph
 import com.example.masterand.ui.theme.MasterAndTheme
 
@@ -20,14 +19,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MasterAndTheme {
-//                ProfileCard(profile = Profile("Gracz1", "Opis gracza 1\nOpis gracza 1\nOpis gracza 1"))
-//                ProfileScreen()
-//                GameScreen()
                 navController = rememberNavController()
-
                 //Funkcja odpowiedziana za powiązania między kolejnymi ekranami
                 SetupNavGraph(navController = navController)
-
             }
         }
     }
