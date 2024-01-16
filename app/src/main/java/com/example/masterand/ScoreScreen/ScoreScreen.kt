@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,8 +30,12 @@ fun ScoreScreen(navController: NavController,
                 score: String,
                viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    viewModel.getProfileById(profileId.toLong())
-    val profileDetails = viewModel.profileUiState.profileDetails
+    LaunchedEffect(profileId != null && profileId.trim() != ""){
+        if (profileId != null && profileId.trim() != "") {
+            viewModel.getProfileById(profileId.toLong())
+        }
+        viewModel.score.value = score.toInt()
+    }
     val coroutineScope = rememberCoroutineScope()
 
     Column(
@@ -55,7 +60,10 @@ fun ScoreScreen(navController: NavController,
         )
         Button(
             onClick = {
-                navController.navigate("${Screen.Game.route}/${profileDetails.id}")
+                coroutineScope.launch {
+                    viewModel.updateProfile()
+                    navController.navigate("${Screen.Game.route}/${viewModel.profileId.value}")
+                }
             },
             shape = CircleShape
         ) {
@@ -64,7 +72,7 @@ fun ScoreScreen(navController: NavController,
         Button(
             onClick = {
                 coroutineScope.launch {
-                    viewModel.updateProfileScore(score = score.toInt())
+                    viewModel.updateProfile()
                     navController.navigate(route = Screen.Start.route)
                 }
             },

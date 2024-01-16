@@ -24,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,20 +48,26 @@ private fun createPickImageIntent(): Intent {
 
 @Composable
 fun StartScreen(
+    profileId: String?,
     navController: NavController,
     viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    LaunchedEffect(profileId != null && profileId.trim() != ""){
+        if (profileId != null && profileId.trim() != "") {
+            viewModel.getProfileById(profileId.toLong())
+        }
+    }
     val coroutineScope = rememberCoroutineScope()
     val nameFocusState = remember { mutableStateOf(false) }
     val emailFocusState = remember { mutableStateOf(false) }
     val colorsFocusState = remember { mutableStateOf(false) }
 
-    val onValueChange = viewModel::updateUiState
-    val profileDetails = viewModel.profileUiState.profileDetails
+//    val onValueChange = viewModel::updateUiState
+//    val profileDetails = viewModel.profileUiState.profileDetails
 
-    val isNameValid = profileDetails.name.isNotEmpty()
-    val isEmailValid = Patterns.EMAIL_ADDRESS.matcher(profileDetails.email).matches()
-    val isColorsValid = profileDetails.numberOfColors.toIntOrNull() in 5..10
+    val isNameValid = viewModel.name.value.isNotEmpty()
+    val isEmailValid = Patterns.EMAIL_ADDRESS.matcher(viewModel.email.value).matches()
+    val isColorsValid = viewModel.numberOfColors.value in 5..10
     val dataValid:Boolean = isNameValid && isEmailValid && isColorsValid
 
     val selectImageLauncher =
@@ -68,7 +75,7 @@ fun StartScreen(
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data
                 val selectedImageUri: Uri? = data?.data
-                onValueChange(profileDetails.copy(profileImageUri = selectedImageUri))
+                viewModel.profileImageUri.value = selectedImageUri
             }
         }
 
@@ -92,7 +99,7 @@ fun StartScreen(
                 .clip(CircleShape)
                 .clickable { selectImageLauncher.launch(createPickImageIntent()) }
         ) {
-            ProfileImageWithPicker(profileImageUri = profileDetails.profileImageUri, selectImageOnClick = {
+            ProfileImageWithPicker(profileImageUri = viewModel.profileImageUri.value, selectImageOnClick = {
                 selectImageLauncher.launch(createPickImageIntent())
             })
         }
@@ -100,39 +107,45 @@ fun StartScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextFieldWithError(
-            profileDetails.name,
+            viewModel.name.value,
             nameFocusState,
             isNameValid,
             "Enter name",
             "Name can't be empty",
             KeyboardType.Text,
-            onValueChange = { onValueChange(profileDetails.copy(name = it)) }
+            onValueChange = { viewModel.name.value = it}
         )
         OutlinedTextFieldWithError(
-            profileDetails.email,
+            viewModel.email.value,
             emailFocusState,
             isEmailValid,
             "Enter e-mail",
             "It must be e-mail",
             KeyboardType.Email,
-            onValueChange = { onValueChange(profileDetails.copy(email = it)) }
+            onValueChange = { viewModel.email.value = it}
 
         )
         OutlinedTextFieldWithError(
-            profileDetails.numberOfColors,
+            viewModel.numberOfColors.value.toString(),
             colorsFocusState,
             isColorsValid,
             "Enter number of colors",
             "The number must be between 5 and 10",
             KeyboardType.Number,
-            onValueChange = { onValueChange(profileDetails.copy(numberOfColors = it)) }
+            onValueChange = {
+                if(it == "" || it == null){
+                    viewModel.numberOfColors.value = 0
+                }else{
+                    viewModel.numberOfColors.value = it.toInt()
+                }
+            }
             )
 
         Button(
             onClick = {
                 coroutineScope.launch {
-                    val id = viewModel.saveProfile()
-                    navController.navigate("${Screen.Profile.route}/${id}")
+                    viewModel.saveProfile()
+                    navController.navigate("${Screen.Profile.route}/${viewModel.profileId.value}")
                 }
             },
             modifier = Modifier.fillMaxWidth(),

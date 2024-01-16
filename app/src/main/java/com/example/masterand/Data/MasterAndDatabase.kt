@@ -15,15 +15,13 @@ abstract class MasterAndDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var Instance: MasterAndDatabase? = null
-
         fun getDatabase(context: Context): MasterAndDatabase {
-            return Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, MasterAndDatabase::class.java, "profile_database")
-                    .fallbackToDestructiveMigration()
-                    .allowMainThreadQueries()
-                    .build()
-                    .also { Instance = it }
-            }
+            return Room.databaseBuilder(
+                context,
+                MasterAndDatabase::class.java,
+                "MasterAndDatabase"
+            )
+                .build().also { Instance = it }
         }
     }
 }

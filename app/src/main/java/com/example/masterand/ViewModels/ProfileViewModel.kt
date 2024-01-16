@@ -1,109 +1,89 @@
 package com.example.masterand.ViewModels
 
 import android.net.Uri
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.masterand.Data.Profile
 import com.example.masterand.Data.ProfileRepository
 import com.example.masterand.R
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 
 class ProfileViewModel(private val profileRepository: ProfileRepository) : ViewModel() {
-    var profileUiState by mutableStateOf(ProfileUiState())
-        private set
 
-    fun updateUiState(profileDetails: ProfileDetails) {
-        profileUiState =
-            ProfileUiState(
-                profileDetails = profileDetails,
-                isEntryValid = validateInput(profileDetails)
+    suspend fun getProfileById(id: Long) {
+        val profile = profileRepository.getProfileById(id)
+        profileId.value = profile.id
+        name.value = profile.name
+        email.value = profile.email
+        description.value = profile.description
+        score.value = profile.score
+        numberOfColors.value = profile.numberOfColors
+        profileImageUri.value = profile.profileImageUri
+    }
+
+
+    var profileId = mutableLongStateOf(0L)
+    val name = mutableStateOf("")
+    val email = mutableStateOf("")
+    val description = mutableStateOf("Wprowadź opis")
+    val score = mutableIntStateOf(0)
+    val numberOfColors = mutableIntStateOf(5);
+    val profileImageUri = mutableStateOf(Uri.parse("android.resource://com.example.masterand/${R.drawable.baseline_question_mark_24}"))
+    suspend fun saveProfile() {
+        val profile = profileRepository.getProfileByEmail(email.value)
+        if (profile == null) {
+            val newProfileId = profileRepository.insertProfile(
+                Profile(
+                    name = name.value,
+                    email = email.value,
+                    description = description.value,
+                    score = 0,
+                    numberOfColors = numberOfColors.value,
+                    profileImageUri = profileImageUri.value
+                )
             )
-    }
-
-    fun getProfileById(id: Long) {
-        viewModelScope.launch {
-            profileRepository.getProfileById(id).collect { profile ->
-                if (profile != null) {
-                    profileUiState = profile.toProfileUiState(true)
-                } else {
-                    profileUiState = ProfileUiState()
-                }
-            }
+            profileId.value = newProfileId
+        } else {
+            val updatedProfile = Profile(
+                id = profile.id,
+                name = profile.name,
+                email = profile.email,
+                description = profile.description,
+                score = profile.score,
+                numberOfColors = numberOfColors.value,
+                profileImageUri = profileImageUri.value
+            )
+            profileRepository.updateProfile(updatedProfile)
+            profileId.value = profile.id
         }
     }
 
-    fun getAllProfilesInsteadLoggedUser(id: Long): MutableList<ProfileDetails> {
-        var listOfProfilesDetails: MutableList<ProfileDetails> = mutableListOf()
-        var listOfProfiles = profileRepository.getAllProfilesStream()
-
-        if (!listOfProfiles.isEmpty()) {
-            listOfProfiles.forEach { profile ->
-                if(profile.id != id){
-                    listOfProfilesDetails.add(profile.toProfileDetails())
-                }
-            }
-        }
-        return listOfProfilesDetails
+    suspend fun updateProfile(){
+        profileRepository.updateProfile(
+            Profile(
+            id = profileId.value,
+            email = email.value,
+            name = name.value,
+            numberOfColors = numberOfColors.value,
+            profileImageUri = profileImageUri.value,
+            score = score.value,
+            description = description.value
+        ))
     }
 
-    suspend fun saveProfile(): Long {
-        if (validateInput()) {
-            val insertedId =
-                profileRepository.insertProfile(profileUiState.profileDetails.toProfile())
-            return insertedId
-        }
-        return 0
-    }
-
-    suspend fun updateProfileScore(score: Int) {
-        profileUiState.profileDetails.score = score.toString()
-        profileRepository.updateProfile(profileUiState.profileDetails.toProfile())
-    }
-
-    private fun validateInput(uiState: ProfileDetails = profileUiState.profileDetails): Boolean {
-        return with(uiState) {
-            name.isNotBlank() && email.isNotBlank() && numberOfColors.isNotBlank()
+    suspend fun updateScore(){
+        val profile = profileRepository.getProfileById(profileId.value)
+        if(profile.score == 0 && score.value > 0){
+            updateProfile()
+        }else if(profile.score > score.value){
+            updateProfile()
         }
     }
 
+    fun getAllProfiles(): Flow<List<Profile>> {
+        val profiles = profileRepository.getAllProfilesStream()
+        return profiles
+    }
 }
-
-data class ProfileUiState(
-    val profileDetails: ProfileDetails = ProfileDetails(),
-    val isEntryValid: Boolean = false
-)
-
-data class ProfileDetails(
-    var id: Long = 0,
-    val email: String = "",
-    val name: String = "",
-    val numberOfColors: String = "",
-    var score: String = "",
-    val profileImageUri: Uri? = Uri.parse("android.resource://com.example.masterand/${R.drawable.baseline_question_mark_24}")
-)
-
-fun ProfileDetails.toProfile(): Profile = Profile(
-    id = id,
-    email = email,
-    name = name,
-    numberOfColors = numberOfColors.toIntOrNull() ?: 4,
-    score = score.toIntOrNull() ?: 0,
-    profileImageUri = profileImageUri
-)
-
-fun Profile.toProfileUiState(isEntryValid: Boolean = false): ProfileUiState = ProfileUiState(
-    profileDetails = this.toProfileDetails(),
-    isEntryValid = isEntryValid
-)
-
-fun Profile.toProfileDetails(): ProfileDetails = ProfileDetails(
-    id = id,
-    email = email,
-    name = name,
-    numberOfColors = numberOfColors.toString(),
-    score = score.toString(),
-    profileImageUri = profileImageUri
-)

@@ -6,12 +6,12 @@ interface  ProfileRepository {
     /**
      * Retrieve all the Profiles from the the given data source.
      */
-    fun getAllProfilesStream(): List<Profile>
+    fun getAllProfilesStream(): Flow<List<Profile>>
 
     /**
      * Retrieve an Profile from the given data source that matches with the [id].
      */
-    fun getProfileById(id: Long): Flow<Profile?>
+    suspend fun getProfileById(id: Long): Profile
 
     /**
      * Insert Profile in the data source
@@ -22,5 +22,10 @@ interface  ProfileRepository {
      * Update Profile in the data source
      */
     suspend fun updateProfile(profile: Profile)
+
+    /**
+     * Get profiles with specific email
+     */
+    suspend fun getProfileByEmail(email: String) : Profile
 
 }

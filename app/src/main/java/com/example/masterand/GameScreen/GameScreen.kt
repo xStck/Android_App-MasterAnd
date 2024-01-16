@@ -1,5 +1,6 @@
 package com.example.masterand.GameScreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,9 +16,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +31,7 @@ import androidx.navigation.NavController
 import com.example.masterand.AppViewModelProvider
 import com.example.masterand.Navigation.Screen
 import com.example.masterand.ViewModels.ProfileViewModel
+import kotlinx.coroutines.launch
 
 data class GameRowData(
     val chosenColors: MutableList<Color> = mutableStateListOf(
@@ -50,13 +54,18 @@ fun GameScreen(
     profileId: String,
     viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    LaunchedEffect(profileId != null && profileId.trim() != ""){
+        if (profileId != null && profileId.trim() != "") {
+            viewModel.getProfileById(profileId.toLong())
+        }
+    }
+    val coroutineScope = rememberCoroutineScope()
+
     var attempts = remember { mutableStateOf(0) }
     var gameOver = remember {
         mutableStateOf(false)
     }
-    viewModel.getProfileById(profileId.toLong())
-    val profileDetails = viewModel.profileUiState.profileDetails
-    val numberOfColors = profileDetails.numberOfColors.toInt()
+    val numberOfColors = viewModel.numberOfColors.value
     val colors =
         listOf(
             Color.Red,
@@ -91,7 +100,7 @@ fun GameScreen(
         ) {
             Button(
                 onClick = {
-                    navController.navigate("${Screen.Profile.route}/${profileDetails.id}")
+                    navController.navigate("${Screen.Profile.route}/${viewModel.profileId.value}")
                 },
                 shape = CircleShape,
             ) {
@@ -140,7 +149,7 @@ fun GameScreen(
         if (gameOver.value) {
             Button(
                 onClick = {
-                    navController.navigate("${Screen.Score.route}/${profileDetails.id}/${attempts.value}")
+                    navController.navigate("${Screen.Score.route}/${viewModel.profileId.value}/${attempts.value}")
                 },
                 shape = CircleShape
             ) {
@@ -152,7 +161,13 @@ fun GameScreen(
 
         Button(
             onClick = {
-                navController.navigate(route = Screen.Start.route)
+                coroutineScope.launch {
+                    if(gameOver.value && attempts.value > viewModel.score.value){
+                        viewModel.score.value = attempts.value
+                        viewModel.updateScore()
+                    }
+                    navController.navigate(route = Screen.Start.route)
+                }
             },
             shape = CircleShape
         ) {

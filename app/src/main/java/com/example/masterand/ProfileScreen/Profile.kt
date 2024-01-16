@@ -1,6 +1,5 @@
-package com.example.firstapp
+package com.example.masterand.ProfileScreen
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,20 +34,20 @@ import com.example.masterand.AppViewModelProvider
 import com.example.masterand.Navigation.Screen
 import com.example.masterand.ViewModels.ProfileViewModel
 
-data class Profile(val login: String, val description: String, val profileImageUri: Uri?)
-
 @Composable
 fun ProfileCard(
     profileId: String,
     navController: NavController,
     viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    viewModel.getProfileById(profileId.toLong())
-    val profileDetails = viewModel.profileUiState.profileDetails
-    val allProfiles = viewModel.getAllProfilesInsteadLoggedUser(profileId.toLong())
+    LaunchedEffect(true) {
+        viewModel.getProfileById(profileId.toLong())
+    }
 
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top
 
         ) {
@@ -58,7 +58,7 @@ fun ProfileCard(
         ) {
             Button(
                 onClick = {
-                    navController.navigate("${Screen.Start.route}")
+                    navController.navigate("${Screen.Start.route}?profileId=${profileId}")
                 },
                 shape = CircleShape
             ) {
@@ -72,7 +72,7 @@ fun ProfileCard(
         ) {
             Column {
                 AsyncImage(
-                    model = profileDetails.profileImageUri,
+                    model = viewModel.profileImageUri.value,
                     contentDescription = "Profile image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -82,44 +82,52 @@ fun ProfileCard(
             }
             Spacer(modifier = Modifier.width(10.dp))
             Column {
-                Text(text = "Nazwa użytkownika: " + profileDetails.name, style = TextStyle(fontSize = 24.sp))
-                Text(text = "Email: "+profileDetails.email, style = TextStyle(fontSize = 16.sp))
-                Text(text = "Liczba kolorów: "+profileDetails.numberOfColors, style = TextStyle(fontSize = 16.sp))
-                Button(
-                    onClick = {
-                        navController.navigate("${Screen.Game.route}/${profileDetails.id}")
-                    },
-                    modifier = Modifier
-                        .padding(8.dp)
-                ) {
-                    Text(text = "Play")
+                Text(text = "Nazwa użytkownika: " + viewModel.name.value, style = TextStyle(fontSize = 24.sp))
+                Text(text = "Email: "+viewModel.email.value, style = TextStyle(fontSize = 16.sp))
+                Text(text = "Liczba kolorów: "+viewModel.numberOfColors.value, style = TextStyle(fontSize = 16.sp))
+                Text(text = "Najwyższy wynik: "+viewModel.score.value, style = TextStyle(fontSize = 16.sp))
+                Text(text = "Opis: "+viewModel.description.value, style = TextStyle(fontSize = 16.sp))
+                Row{
+                    Button(
+                        onClick = {
+                            navController.navigate("${Screen.Game.route}/${viewModel.profileId.value}")
+                        },
+                        modifier = Modifier
+                            .padding(8.dp)
+                    ) {
+                        Text(text = "Play")
+                    }
+                    Button(
+                        onClick = {
+                            navController.navigate("${Screen.Description.route}/${viewModel.profileId.value}")
+                        },
+                        modifier = Modifier
+                            .padding(8.dp)
+                    ) {
+                        Text(text = "Edytuj opis")
+                    }
                 }
-            }
-        }
+                Row{
+                    Button(
+                        onClick = {
+                            navController.navigate("${Screen.HighScores.route}/${viewModel.profileId.value}")
+                        },
+                        modifier = Modifier
+                            .padding(8.dp)
+                    ) {
+                        Text(text = "Tablica wyników")
+                    }
+                    Button(
+                        onClick = {
+                                navController.navigate(route = Screen.Start.route)
+                        },
+                        shape = CircleShape
+                    ) {
+                        Text(text = "Logout")
+                    }
+                }
 
-        for (profile in allProfiles){
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Column {
-                        AsyncImage(
-                            model = profile.profileImageUri,
-                            contentDescription = "Profile image",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(120.dp),
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Column {
-                        Text(text = profile.name, style = TextStyle(fontSize = 24.sp))
-                        Text(text = "Email: "+profile.email, style = TextStyle(fontSize = 16.sp))
-                        Text(text = "Liczba kolorów: "+profile.numberOfColors, style = TextStyle(fontSize = 16.sp))
-                        Text(text = "Wynik: "+profile.score, style = TextStyle(fontSize = 16.sp))
-                    }
-                }
+            }
         }
     }
 }

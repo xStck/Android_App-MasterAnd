@@ -10,14 +10,17 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProfileDao {
-    @Query("SELECT * from profiles ORDER BY name ASC")
-    fun getAllProfiles(): List<Profile>
+    @Query("SELECT * from profiles ORDER BY score DESC")
+    fun getAllProfilesStream(): Flow<List<Profile>>
 
     @Query("SELECT * from profiles WHERE id = :id")
-    fun getProfileById(id: Long): Flow<Profile>
+    suspend fun getProfileById(id: Long): Profile
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(profile: Profile) : Long
+
+    @Query("SELECT * from profiles WHERE email = :email")
+    suspend fun getProfileByEmail(email: String): Profile
 
     @Update
     suspend fun update(profile: Profile)

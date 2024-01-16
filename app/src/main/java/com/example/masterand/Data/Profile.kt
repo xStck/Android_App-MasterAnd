@@ -11,6 +11,7 @@ data class Profile(
     val name: String,
     val numberOfColors: Int,
     val profileImageUri: Uri?,
-    val score: Int
+    val score: Int,
+    val description: String
     )
 
