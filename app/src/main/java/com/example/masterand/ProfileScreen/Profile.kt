@@ -60,7 +60,8 @@ fun ProfileCard(
                 onClick = {
                     navController.navigate("${Screen.Start.route}?profileId=${profileId}")
                 },
-                shape = CircleShape
+                shape = CircleShape,
+                modifier = Modifier.padding(8.dp)
             ) {
                 Icon(Icons.Filled.ArrowBack, "Back")
             }
@@ -93,7 +94,7 @@ fun ProfileCard(
                             navController.navigate("${Screen.Game.route}/${viewModel.profileId.value}")
                         },
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(8.dp).width(100.dp)
                     ) {
                         Text(text = "Play")
                     }
@@ -102,7 +103,7 @@ fun ProfileCard(
                             navController.navigate("${Screen.Description.route}/${viewModel.profileId.value}")
                         },
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(8.dp).width(140.dp)
                     ) {
                         Text(text = "Edytuj opis")
                     }
@@ -113,14 +114,15 @@ fun ProfileCard(
                             navController.navigate("${Screen.HighScores.route}/${viewModel.profileId.value}")
                         },
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(8.dp).width(130.dp)
                     ) {
-                        Text(text = "Tablica wyników")
+                        Text(text = "High scores")
                     }
                     Button(
                         onClick = {
                                 navController.navigate(route = Screen.Start.route)
                         },
+                        modifier = Modifier.padding(8.dp).width(100.dp),
                         shape = CircleShape
                     ) {
                         Text(text = "Logout")

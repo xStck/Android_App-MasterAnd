@@ -52,13 +52,29 @@ fun EditDescription(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Top
-
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
+        ) {
+            Button(
+                onClick = {
+                    navController.navigate("${Screen.Profile.route}/${profileId}")
+                },
+                shape = CircleShape,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Icon(Icons.Filled.ArrowBack, "Back")
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically // Center align the content vertically
+
         ) {
             OutlinedTextFieldWithError(
                 viewModel.description.value,
@@ -67,42 +83,29 @@ fun EditDescription(
                 "Enter description",
                 "Description can't be empty",
                 KeyboardType.Text,
-                onValueChange = { viewModel.description.value = it}
+                onValueChange = { viewModel.description.value = it }
             )
-            Button(
-                onClick = {
-                    navController.navigate("${Screen.Profile}/${viewModel.profileId.value}")
-                },
-                shape = CircleShape,
-            ) {
-                Icon(Icons.Filled.ArrowBack, "Back")
-            }
         }
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.Top
         ) {
-
             Spacer(modifier = Modifier.width(10.dp))
-            Column {
-                Row{
-                    Button(
-                        onClick = {
-                            coroutineScope.launch(){
-                                viewModel.updateProfile()
-                                navController.navigate("${Screen.Profile.route}/${viewModel.profileId.value}")
-                            }
-                        },
-                        modifier = Modifier
-                            .padding(8.dp),
-                        enabled = isDescriptionValid
-                    ) {
-                        Text(text = "Edytuj opis")
+            Button(
+                onClick = {
+                    coroutineScope.launch() {
+                        viewModel.updateProfile()
+                        navController.navigate("${Screen.Profile.route}/${viewModel.profileId.value}")
                     }
-                }
-
+                },
+                modifier = Modifier
+                    .padding(8.dp).fillMaxWidth(),
+                enabled = isDescriptionValid
+            ) {
+                Text(text = "Edytuj opis")
             }
+
         }
     }
 }

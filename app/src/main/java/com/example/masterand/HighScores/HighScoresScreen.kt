@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -56,7 +57,7 @@ fun HighScoresScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
@@ -69,7 +70,8 @@ fun HighScoresScreen(
                 onClick = {
                     navController.navigate("${Screen.Profile.route}/${profileId}")
                 },
-                shape = CircleShape
+                shape = CircleShape,
+                modifier = Modifier.padding(8.dp)
             ) {
                 Icon(Icons.Filled.ArrowBack, "Back")
             }

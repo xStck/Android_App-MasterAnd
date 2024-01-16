@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Profile::class], version = 5, exportSchema = false)
+@Database(entities = [Profile::class], version = 6, exportSchema = false)
 @TypeConverters(UriConverter::class)
 abstract class MasterAndDatabase : RoomDatabase() {
 
@@ -20,7 +20,7 @@ abstract class MasterAndDatabase : RoomDatabase() {
                 context,
                 MasterAndDatabase::class.java,
                 "MasterAndDatabase"
-            )
+            ).fallbackToDestructiveMigration()
                 .build().also { Instance = it }
         }
     }
