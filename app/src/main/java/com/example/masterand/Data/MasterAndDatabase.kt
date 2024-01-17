@@ -6,11 +6,14 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Profile::class], version = 6, exportSchema = false)
+@Database(entities = [Profile::class, Score::class], version = 8, exportSchema = false)
 @TypeConverters(UriConverter::class)
 abstract class MasterAndDatabase : RoomDatabase() {
 
     abstract fun profileDao(): ProfileDao
+    abstract fun playerScoreDao(): PlayerScoreDao
+
+    abstract fun scoreDao(): ScoreDao
 
     companion object {
         @Volatile

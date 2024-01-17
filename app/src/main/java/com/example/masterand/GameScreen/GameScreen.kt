@@ -40,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.masterand.AppViewModelProvider
 import com.example.masterand.Navigation.Screen
+import com.example.masterand.ViewModels.PlayerScoreViewModel
 import com.example.masterand.ViewModels.ProfileViewModel
 import kotlinx.coroutines.launch
 
@@ -62,8 +63,7 @@ data class GameRowData(
 fun GameScreen(
     navController: NavController,
     profileId: String,
-    viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)
-) {
+    viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
 
     val coroutineScope = rememberCoroutineScope()
 

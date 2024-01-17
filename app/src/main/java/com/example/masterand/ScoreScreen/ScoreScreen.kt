@@ -21,14 +21,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.masterand.AppViewModelProvider
 import com.example.masterand.Navigation.Screen
+import com.example.masterand.ViewModels.PlayerScoreViewModel
 import com.example.masterand.ViewModels.ProfileViewModel
+import com.example.masterand.ViewModels.ScoreViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun ScoreScreen(navController: NavController,
                profileId: String,
                 score: String,
-               viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)
+               viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory),
+                viewModelScore: ScoreViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     LaunchedEffect(profileId != null && profileId.trim() != ""){
         if (profileId != null && profileId.trim() != "") {
@@ -61,6 +64,7 @@ fun ScoreScreen(navController: NavController,
         Button(
             onClick = {
                 coroutineScope.launch {
+                    viewModelScore.saveScore(viewModel.profileId.value, score.toInt())
                     viewModel.updateProfile()
                     navController.navigate("${Screen.Game.route}/${viewModel.profileId.value}")
                 }
@@ -72,6 +76,7 @@ fun ScoreScreen(navController: NavController,
         Button(
             onClick = {
                 coroutineScope.launch {
+                    viewModelScore.saveScore(viewModel.profileId.value, score.toInt())
                     viewModel.updateProfile()
                     navController.navigate(route = Screen.Start.route)
                 }
