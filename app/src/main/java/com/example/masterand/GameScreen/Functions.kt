@@ -9,7 +9,7 @@ fun selectNextAvailableColor(
     buttonIndex: Int
 ): Color {
     var chosenColorIndexInc = availableColors.indexOf(chosenColors[buttonIndex])
-    var found = false;
+    var found = false
     while (!found) {
         chosenColorIndexInc++
         if (chosenColorIndexInc > availableColors.count() - 1) {
@@ -49,5 +49,5 @@ fun checkColors(
             feedbackColors.add(notFoundColor)
         }
     }
-    return feedbackColors;
+    return feedbackColors
 }

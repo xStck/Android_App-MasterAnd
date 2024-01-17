@@ -25,8 +25,8 @@ fun SetupNavGraph(navController: NavHostController) {
         startDestination = "start"
     ) {
 
-        composable(route = Screen.Start.route+"?profileId={profileId}",
-            arguments = listOf(navArgument("profileId"){defaultValue=""}),
+        composable(route = Screen.Start.route + "?profileId={profileId}",
+            arguments = listOf(navArgument("profileId") { defaultValue = "" }),
             enterTransition = {
                 fadeIn(animationSpec = tween(durationMillis = 500)) +
                         slideIntoContainer(
@@ -41,7 +41,7 @@ fun SetupNavGraph(navController: NavHostController) {
                             animationSpec = tween(durationMillis = 500, easing = EaseOut)
                         )
             }
-            ) {backStackEntry ->
+        ) { backStackEntry ->
             val profileId = backStackEntry.arguments?.getString("profileId")
             StartScreen(profileId = profileId, navController = navController)
         }
@@ -103,10 +103,13 @@ fun SetupNavGraph(navController: NavHostController) {
                             animationSpec = tween(durationMillis = 500, easing = EaseOut)
                         )
             }) { backStackEntry ->
-            GameScreen(navController = navController, profileId = backStackEntry.arguments?.getString("profileId") ?: "")
+            GameScreen(
+                navController = navController,
+                profileId = backStackEntry.arguments?.getString("profileId") ?: ""
+            )
         }
 
-        composable(route = Screen.Score.route + "/{profileId}/{score}",            enterTransition = {
+        composable(route = Screen.Score.route + "/{profileId}/{score}", enterTransition = {
             fadeIn(animationSpec = tween(durationMillis = 500)) +
                     slideIntoContainer(
                         towards = AnimatedContentTransitionScope.SlideDirection.Start,
@@ -120,7 +123,11 @@ fun SetupNavGraph(navController: NavHostController) {
                             animationSpec = tween(durationMillis = 500, easing = EaseOut)
                         )
             }) { backStackEntry ->
-            ScoreScreen(navController = navController, profileId = backStackEntry.arguments?.getString("profileId") ?: "", score = backStackEntry.arguments?.getString("score")?: "0")
+            ScoreScreen(
+                navController = navController,
+                profileId = backStackEntry.arguments?.getString("profileId") ?: "",
+                score = backStackEntry.arguments?.getString("score") ?: "0"
+            )
         }
 
         composable(route = Screen.HighScores.route + "/{profileId}",
@@ -138,7 +145,10 @@ fun SetupNavGraph(navController: NavHostController) {
                             animationSpec = tween(durationMillis = 500, easing = EaseOut)
                         )
             }) { backStackEntry ->
-            HighScoresScreen(navController = navController, profileId = backStackEntry.arguments?.getString("profileId") ?: "")
+            HighScoresScreen(
+                navController = navController,
+                profileId = backStackEntry.arguments?.getString("profileId") ?: ""
+            )
         }
     }
 }

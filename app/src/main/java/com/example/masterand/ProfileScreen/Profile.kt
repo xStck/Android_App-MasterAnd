@@ -50,7 +50,7 @@ fun ProfileCard(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Top
 
-        ) {
+    ) {
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -83,18 +83,31 @@ fun ProfileCard(
             }
             Spacer(modifier = Modifier.width(10.dp))
             Column {
-                Text(text = "Nazwa użytkownika: " + viewModel.name.value, style = TextStyle(fontSize = 24.sp))
-                Text(text = "Email: "+viewModel.email.value, style = TextStyle(fontSize = 16.sp))
-                Text(text = "Liczba kolorów: "+viewModel.numberOfColors.value, style = TextStyle(fontSize = 16.sp))
-                Text(text = "Najwyższy wynik: "+viewModel.score.value, style = TextStyle(fontSize = 16.sp))
-                Text(text = "Opis: "+viewModel.description.value, style = TextStyle(fontSize = 16.sp))
-                Row{
+                Text(
+                    text = "Nazwa użytkownika: " + viewModel.name.value,
+                    style = TextStyle(fontSize = 24.sp)
+                )
+                Text(text = "Email: " + viewModel.email.value, style = TextStyle(fontSize = 16.sp))
+                Text(
+                    text = "Liczba kolorów: " + viewModel.numberOfColors.value,
+                    style = TextStyle(fontSize = 16.sp)
+                )
+                Text(
+                    text = "Najwyższy wynik: " + viewModel.score.value,
+                    style = TextStyle(fontSize = 16.sp)
+                )
+                Text(
+                    text = "Opis: " + viewModel.description.value,
+                    style = TextStyle(fontSize = 16.sp)
+                )
+                Row {
                     Button(
                         onClick = {
                             navController.navigate("${Screen.Game.route}/${viewModel.profileId.value}")
                         },
                         modifier = Modifier
-                            .padding(8.dp).width(100.dp)
+                            .padding(8.dp)
+                            .width(100.dp)
                     ) {
                         Text(text = "Play")
                     }
@@ -103,26 +116,30 @@ fun ProfileCard(
                             navController.navigate("${Screen.Description.route}/${viewModel.profileId.value}")
                         },
                         modifier = Modifier
-                            .padding(8.dp).width(140.dp)
+                            .padding(8.dp)
+                            .width(140.dp)
                     ) {
                         Text(text = "Edytuj opis")
                     }
                 }
-                Row{
+                Row {
                     Button(
                         onClick = {
                             navController.navigate("${Screen.HighScores.route}/${viewModel.profileId.value}")
                         },
                         modifier = Modifier
-                            .padding(8.dp).width(130.dp)
+                            .padding(8.dp)
+                            .width(130.dp)
                     ) {
                         Text(text = "High scores")
                     }
                     Button(
                         onClick = {
-                                navController.navigate(route = Screen.Start.route)
+                            navController.navigate(route = Screen.Start.route)
                         },
-                        modifier = Modifier.padding(8.dp).width(100.dp),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .width(100.dp),
                         shape = CircleShape
                     ) {
                         Text(text = "Logout")

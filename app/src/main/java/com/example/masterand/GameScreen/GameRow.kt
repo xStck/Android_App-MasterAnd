@@ -5,11 +5,9 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -41,7 +39,8 @@ fun GameRow(
     onCheckClick: () -> Unit
 ) {
     var size = remember { mutableStateOf(0.dp) }
-    val animatedSize = animateDpAsState(targetValue = size.value,
+    val animatedSize = animateDpAsState(
+        targetValue = size.value,
         animationSpec = tween(
             durationMillis = 1000,
         ),
@@ -57,29 +56,29 @@ fun GameRow(
         modifier = Modifier.fillMaxWidth()
     ) {
         SelectableColorsRow(colors = choosenColors, onClick = onSelectColorClick)
-            AnimatedVisibility(
-                visible = isButtonVisible,
-                exit = scaleOut(animationSpec = TweenSpec(durationMillis = 1500))
-            ) {
-                IconButton(
-                    onClick = {
-                        isButtonVisible = false
-                        onCheckClick()
-                    },
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .animateContentSize()
-                        .size(animatedSize.value)
-                        .background(color = MaterialTheme.colorScheme.background),
+        AnimatedVisibility(
+            visible = isButtonVisible,
+            exit = scaleOut(animationSpec = TweenSpec(durationMillis = 1500))
+        ) {
+            IconButton(
+                onClick = {
+                    isButtonVisible = false
+                    onCheckClick()
+                },
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .animateContentSize()
+                    .size(animatedSize.value)
+                    .background(color = MaterialTheme.colorScheme.background),
 
-                    colors = IconButtonDefaults.filledIconButtonColors(),
-                    enabled = clickable
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Confirm",
-                        tint = Color.White,
-                    )
+                colors = IconButtonDefaults.filledIconButtonColors(),
+                enabled = clickable
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Confirm",
+                    tint = Color.White,
+                )
             }
         }
         FeedbackCircles(colors = feedbackColors)

@@ -29,8 +29,10 @@ class ProfileViewModel(private val profileRepository: ProfileRepository) : ViewM
     val email = mutableStateOf("")
     val description = mutableStateOf("Wprowadź opis")
     val score = mutableIntStateOf(0)
-    val numberOfColors = mutableIntStateOf(5);
-    val profileImageUri = mutableStateOf(Uri.parse("android.resource://com.example.masterand/${R.drawable.baseline_question_mark_24}"))
+    val numberOfColors = mutableIntStateOf(5)
+    val profileImageUri =
+        mutableStateOf(Uri.parse("android.resource://com.example.masterand/${R.drawable.baseline_question_mark_24}"))
+
     suspend fun saveProfile() {
         val profile = profileRepository.getProfileByEmail(email.value)
         if (profile == null) {
@@ -60,24 +62,25 @@ class ProfileViewModel(private val profileRepository: ProfileRepository) : ViewM
         }
     }
 
-    suspend fun updateProfile(){
+    suspend fun updateProfile() {
         profileRepository.updateProfile(
             Profile(
-            id = profileId.value,
-            email = email.value,
-            name = name.value,
-            numberOfColors = numberOfColors.value,
-            profileImageUri = profileImageUri.value,
-            score = score.value,
-            description = description.value
-        ))
+                id = profileId.value,
+                email = email.value,
+                name = name.value,
+                numberOfColors = numberOfColors.value,
+                profileImageUri = profileImageUri.value,
+                score = score.value,
+                description = description.value
+            )
+        )
     }
 
-    suspend fun updateScore(){
+    suspend fun updateScore() {
         val profile = profileRepository.getProfileById(profileId.value)
-        if(profile.score == 0 && score.value > 0){
+        if (profile.score == 0 && score.value > 0) {
             updateProfile()
-        }else if(profile.score > score.value){
+        } else if (profile.score > score.value) {
             updateProfile()
         }
     }

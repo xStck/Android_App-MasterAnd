@@ -60,7 +60,7 @@ fun StartScreen(
     navController: NavController,
     viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    LaunchedEffect(profileId != null && profileId.trim() != ""){
+    LaunchedEffect(profileId != null && profileId.trim() != "") {
         if (profileId != null && profileId.trim() != "") {
             viewModel.getProfileById(profileId.toLong())
         }
@@ -74,17 +74,17 @@ fun StartScreen(
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
         targetValue = 1.2f,
-        label="scale",
+        label = "scale",
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 1000),
             repeatMode = RepeatMode.Reverse
         )
     )
 
-    val isNameValid = viewModel.name.value.isNotEmpty()
+    val isNameValid = viewModel.name.value.trim().isNotEmpty()
     val isEmailValid = Patterns.EMAIL_ADDRESS.matcher(viewModel.email.value).matches()
     val isColorsValid = viewModel.numberOfColors.value in 5..10
-    val dataValid:Boolean = isNameValid && isEmailValid && isColorsValid
+    val dataValid: Boolean = isNameValid && isEmailValid && isColorsValid
 
     val selectImageLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -106,11 +106,14 @@ fun StartScreen(
         Text(
             text = "MasterAnd",
             style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier.padding(bottom = 48.dp).graphicsLayer(
-                scaleX = scale,
-                scaleY = scale,
-                transformOrigin = TransformOrigin.Center
-            ))
+            modifier = Modifier
+                .padding(bottom = 48.dp)
+                .graphicsLayer(
+                    scaleX = scale,
+                    scaleY = scale,
+                    transformOrigin = TransformOrigin.Center
+                )
+        )
         Box(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -118,9 +121,11 @@ fun StartScreen(
                 .clip(CircleShape)
                 .clickable { selectImageLauncher.launch(createPickImageIntent()) }
         ) {
-            ProfileImageWithPicker(profileImageUri = viewModel.profileImageUri.value, selectImageOnClick = {
-                selectImageLauncher.launch(createPickImageIntent())
-            })
+            ProfileImageWithPicker(
+                profileImageUri = viewModel.profileImageUri.value,
+                selectImageOnClick = {
+                    selectImageLauncher.launch(createPickImageIntent())
+                })
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -132,7 +137,7 @@ fun StartScreen(
             "Enter name",
             "Name can't be empty",
             KeyboardType.Text,
-            onValueChange = { viewModel.name.value = it}
+            onValueChange = { viewModel.name.value = it }
         )
         OutlinedTextFieldWithError(
             viewModel.email.value,
@@ -141,7 +146,7 @@ fun StartScreen(
             "Enter e-mail",
             "It must be e-mail",
             KeyboardType.Email,
-            onValueChange = { viewModel.email.value = it}
+            onValueChange = { viewModel.email.value = it }
 
         )
         OutlinedTextFieldWithError(
@@ -152,13 +157,13 @@ fun StartScreen(
             "The number must be between 5 and 10",
             KeyboardType.Number,
             onValueChange = {
-                if(it == "" || it == null){
+                if (it == "" || it == null) {
                     viewModel.numberOfColors.value = 0
-                }else{
+                } else {
                     viewModel.numberOfColors.value = it.toInt()
                 }
             }
-            )
+        )
 
         Button(
             onClick = {

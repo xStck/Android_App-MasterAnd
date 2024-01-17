@@ -1,6 +1,5 @@
 package com.example.masterand.GameScreen
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -8,13 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -40,8 +36,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.masterand.AppViewModelProvider
 import com.example.masterand.Navigation.Screen
-import com.example.masterand.ViewModels.PlayerScoreViewModel
 import com.example.masterand.ViewModels.ProfileViewModel
+import com.example.masterand.ViewModels.ScoreViewModel
 import kotlinx.coroutines.launch
 
 data class GameRowData(
@@ -63,7 +59,9 @@ data class GameRowData(
 fun GameScreen(
     navController: NavController,
     profileId: String,
-    viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+    viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel2: ScoreViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -84,9 +82,13 @@ fun GameScreen(
             Color.DarkGray,
             Color.Black
         )
-    var availableColors by remember { mutableStateOf(colors.shuffled().take(viewModel.numberOfColors.value)) }
+    var availableColors by remember {
+        mutableStateOf(
+            colors.shuffled().take(viewModel.numberOfColors.value)
+        )
+    }
     var correctColors by remember { mutableStateOf(selectRandomColors(availableColors)) }
-    var gameRows  = remember { mutableStateListOf(GameRowData()) }
+    var gameRows = remember { mutableStateListOf(GameRowData()) }
 
     LaunchedEffect(profileId) {
         if (profileId != null && profileId.trim().isNotEmpty()) {
@@ -108,7 +110,16 @@ fun GameScreen(
         ) {
             Button(
                 onClick = {
-                    navController.navigate("${Screen.Profile.route}/${viewModel.profileId.value}")
+                    coroutineScope.launch {
+                        if (gameOver.value) {
+                            viewModel2.saveScore(viewModel.profileId.value, attempts.value)
+                        }
+                        if (gameOver.value && attempts.value > viewModel.score.value) {
+                            viewModel.score.value = attempts.value
+                            viewModel.updateScore()
+                        }
+                        navController.navigate("${Screen.Profile.route}/${viewModel.profileId.value}")
+                    }
                 },
                 shape = CircleShape,
                 modifier = Modifier.padding(8.dp)
@@ -174,7 +185,7 @@ fun GameScreen(
                 shape = CircleShape
             ) {
                 Text(
-                    text = "High score table",
+                    text = "Result",
                 )
             }
         }
@@ -182,7 +193,10 @@ fun GameScreen(
         Button(
             onClick = {
                 coroutineScope.launch {
-                    if(gameOver.value && attempts.value > viewModel.score.value){
+                    if (gameOver.value) {
+                        viewModel2.saveScore(viewModel.profileId.value, attempts.value)
+                    }
+                    if (gameOver.value && attempts.value > viewModel.score.value) {
                         viewModel.score.value = attempts.value
                         viewModel.updateScore()
                     }

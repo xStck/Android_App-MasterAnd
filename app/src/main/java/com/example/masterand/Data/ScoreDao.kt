@@ -7,5 +7,5 @@ import androidx.room.OnConflictStrategy
 @Dao
 interface ScoreDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(score: Score) : Long
+    suspend fun insert(score: Score): Long
 }

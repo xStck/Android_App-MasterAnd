@@ -2,7 +2,7 @@ package com.example.masterand.Data
 
 import kotlinx.coroutines.flow.Flow
 
-interface  ProfileRepository {
+interface ProfileRepository {
     /**
      * Retrieve all the Profiles from the the given data source.
      */
@@ -16,7 +16,7 @@ interface  ProfileRepository {
     /**
      * Insert Profile in the data source
      */
-    suspend fun insertProfile(profile: Profile) : Long
+    suspend fun insertProfile(profile: Profile): Long
 
     /**
      * Update Profile in the data source
@@ -26,6 +26,6 @@ interface  ProfileRepository {
     /**
      * Get profiles with specific email
      */
-    suspend fun getProfileByEmail(email: String) : Profile
+    suspend fun getProfileByEmail(email: String): Profile
 
 }

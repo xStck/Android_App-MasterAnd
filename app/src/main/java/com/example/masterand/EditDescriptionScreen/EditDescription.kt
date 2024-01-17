@@ -94,13 +94,14 @@ fun EditDescription(
             Spacer(modifier = Modifier.width(10.dp))
             Button(
                 onClick = {
-                    coroutineScope.launch() {
+                    coroutineScope.launch {
                         viewModel.updateProfile()
                         navController.navigate("${Screen.Profile.route}/${viewModel.profileId.value}")
                     }
                 },
                 modifier = Modifier
-                    .padding(8.dp).fillMaxWidth(),
+                    .padding(8.dp)
+                    .fillMaxWidth(),
                 enabled = isDescriptionValid
             ) {
                 Text(text = "Edytuj opis")

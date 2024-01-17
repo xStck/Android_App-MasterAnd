@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Profile::class, Score::class], version = 8, exportSchema = false)
+@Database(entities = [Profile::class, Score::class], version = 16, exportSchema = false)
 @TypeConverters(UriConverter::class)
 abstract class MasterAndDatabase : RoomDatabase() {
 

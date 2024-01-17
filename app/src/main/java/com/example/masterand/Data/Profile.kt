@@ -1,4 +1,5 @@
 package com.example.masterand.Data
+
 import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -13,5 +14,5 @@ data class Profile(
     val profileImageUri: Uri?,
     val score: Int,
     val description: String
-    )
+)
 

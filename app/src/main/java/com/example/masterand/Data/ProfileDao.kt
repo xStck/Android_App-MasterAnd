@@ -17,7 +17,7 @@ interface ProfileDao {
     suspend fun getProfileById(id: Long): Profile
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(profile: Profile) : Long
+    suspend fun insert(profile: Profile): Long
 
     @Query("SELECT * from profiles WHERE email = :email")
     suspend fun getProfileByEmail(email: String): Profile

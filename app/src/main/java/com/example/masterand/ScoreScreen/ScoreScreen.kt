@@ -21,19 +21,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.masterand.AppViewModelProvider
 import com.example.masterand.Navigation.Screen
-import com.example.masterand.ViewModels.PlayerScoreViewModel
 import com.example.masterand.ViewModels.ProfileViewModel
 import com.example.masterand.ViewModels.ScoreViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun ScoreScreen(navController: NavController,
-               profileId: String,
-                score: String,
-               viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory),
-                viewModelScore: ScoreViewModel = viewModel(factory = AppViewModelProvider.Factory)
+fun ScoreScreen(
+    navController: NavController,
+    profileId: String,
+    score: String,
+    viewModel: ProfileViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModelScore: ScoreViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    LaunchedEffect(profileId != null && profileId.trim() != ""){
+    LaunchedEffect(profileId != null && profileId.trim() != "") {
         if (profileId != null && profileId.trim() != "") {
             viewModel.getProfileById(profileId.toLong())
         }

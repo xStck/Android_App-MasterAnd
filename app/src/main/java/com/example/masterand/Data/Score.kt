@@ -9,4 +9,4 @@ data class Score(
     val scoreId: Long = 0,
     val playerId: Long,
     val score: Int = 0
-   )
+)
