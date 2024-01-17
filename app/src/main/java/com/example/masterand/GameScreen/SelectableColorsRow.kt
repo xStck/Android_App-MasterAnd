@@ -1,8 +1,19 @@
 package com.example.masterand.GameScreen
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.repeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -13,10 +24,25 @@ fun SelectableColorsRow(
     onClick: (buttonIndex: Int) -> Unit
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-        CircularButton(onClick = { onClick(0) }, color = colors[0])
-        CircularButton(onClick = { onClick(1) }, color = colors[1])
-        CircularButton(onClick = { onClick(2) }, color = colors[2])
-        CircularButton(onClick = { onClick(3) }, color = colors[3])
+        for(i in 0 .. 3){
+            val animatedColor by remember { mutableStateOf(true) }
+            val animatedColor1 by animateColorAsState(
+                if (animatedColor) colors[i] else {
+                    if (i == 0){
+                        colors[colors.count()-1]
+                    }else{
+                        colors[i-1]
+                    }
+                },
+                animationSpec = repeatable(
+                    iterations = 5,
+                    animation = tween(durationMillis = 200),
+                    repeatMode = RepeatMode.Reverse
+                ), label = "color"
+            )
+            CircularButton(onClick = { onClick(i)
+                animatedColor != animatedColor}, color = animatedColor1)
+        }
     }
 }
 

@@ -98,10 +98,6 @@ fun HighScoresScreen(
                         style = TextStyle(fontSize = 24.sp)
                     )
                     Text(
-                        text = "Liczba kolorów: " + profile.numberOfColors,
-                        style = TextStyle(fontSize = 16.sp)
-                    )
-                    Text(
                         text = "Najwyższy wynik: " + profile.score,
                         style = TextStyle(fontSize = 16.sp)
                     )
