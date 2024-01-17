@@ -48,7 +48,7 @@ class ProfileViewModel(private val profileRepository: ProfileRepository) : ViewM
         } else {
             val updatedProfile = Profile(
                 id = profile.id,
-                name = profile.name,
+                name = name.value,
                 email = profile.email,
                 description = profile.description,
                 score = profile.score,

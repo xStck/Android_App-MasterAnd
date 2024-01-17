@@ -22,10 +22,10 @@ fun FeedbackCircles(colors: List<Color>) {
     val colorAnimation2 = remember { Animatable(Color.Transparent) }
     val colorAnimation3 = remember { Animatable(Color.Transparent) }
     LaunchedEffect(colors) {
-        colorAnimation0.animateTo(colors[0], animationSpec = tween(500))
-        colorAnimation1.animateTo(colors[1], animationSpec = tween(500))
-        colorAnimation2.animateTo(colors[2], animationSpec = tween(500))
-        colorAnimation3.animateTo(colors[3], animationSpec = tween(500))
+        colorAnimation0.animateTo(colors[0], animationSpec = tween(300))
+        colorAnimation1.animateTo(colors[1], animationSpec = tween(300))
+        colorAnimation2.animateTo(colors[2], animationSpec = tween(300))
+        colorAnimation3.animateTo(colors[3], animationSpec = tween(300))
     }
     Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {

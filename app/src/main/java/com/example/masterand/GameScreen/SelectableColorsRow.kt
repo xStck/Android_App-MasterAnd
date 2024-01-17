@@ -28,15 +28,17 @@ fun SelectableColorsRow(
             val animatedColor by remember { mutableStateOf(true) }
             val animatedColor1 by animateColorAsState(
                 if (animatedColor) colors[i] else {
-                    if (i == 0){
-                        colors[colors.count()-1]
+                    if (i == colors.count()-1){
+                        colors[colors.count()-2]
                     }else{
-                        colors[i-1]
+                        colors[i+1]
                     }
                 },
                 animationSpec = repeatable(
-                    iterations = 5,
-                    animation = tween(durationMillis = 200),
+                    iterations = 10,
+                    animation = tween(durationMillis = 100,
+                        delayMillis = 30,
+                        easing = LinearOutSlowInEasing),
                     repeatMode = RepeatMode.Reverse
                 ), label = "color"
             )
