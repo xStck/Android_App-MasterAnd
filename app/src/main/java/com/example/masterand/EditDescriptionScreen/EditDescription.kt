@@ -73,7 +73,7 @@ fun EditDescription(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically // Center align the content vertically
+            verticalAlignment = Alignment.CenterVertically
 
         ) {
             OutlinedTextFieldWithError(

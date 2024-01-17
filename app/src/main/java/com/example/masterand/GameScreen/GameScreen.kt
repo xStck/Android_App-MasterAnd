@@ -167,7 +167,7 @@ fun GameScreen(
                                 gameOver.value = true
                             } else {
                                 gameRows.add(GameRowData())
-                                rowVisible = true // Ustawienie widoczności dla nowego wiersza
+                                rowVisible = true
                             }
                         }
                     }

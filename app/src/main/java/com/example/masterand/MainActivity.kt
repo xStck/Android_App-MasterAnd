@@ -20,7 +20,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             MasterAndTheme {
                 navController = rememberNavController()
-                //Funkcja odpowiedziana za powiązania między kolejnymi ekranami
                 SetupNavGraph(navController = navController)
             }
         }

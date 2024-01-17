@@ -80,9 +80,9 @@ fun HighScoresScreen(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),  // Dodano odstęp dla lepszego wyglądu
-                verticalAlignment = Alignment.CenterVertically,  // Wyśrodkowanie wertykalne
-                horizontalArrangement = Arrangement.Center  // Wyśrodkowanie poziome
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     "Brak wyników",
@@ -90,7 +90,7 @@ fun HighScoresScreen(
                         .fillMaxWidth()
                         .padding(8.dp),
                     fontSize = 40.sp,
-                    textAlign = TextAlign.Center  // Wyśrodkowanie tekstu
+                    textAlign = TextAlign.Center
                 )
             }
         } else {
